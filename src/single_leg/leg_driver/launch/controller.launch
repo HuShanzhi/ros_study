@@ -1,0 +1,4 @@
+<launch>
+    <!-- Launch the robot driver node -->
+    <node name="leg_driver" pkg="leg_driver" type="leg_driver_node" output="screen"/>
+</launch>

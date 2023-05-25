@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="paused" default="false"/>
+    <arg name="use_sim_time" default="true"/>
+    <arg name="robot_namespace" default="nyu_finger"/>
+    <arg name="is_start_rviz" default="true"/>
+
+    <include file="$(find nyu_finger_description)/launch/load_robot_param.launch">
+        <arg name="robot_type" value="$(arg robot_namespace)"/>
+    </include>
+
+    <!-- Launch the robot driver node -->
+    <!-- <node name="leg_driver" pkg="leg_driver" type="leg_driver_node" output="screen"/> -->
+
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="paused" value="$(arg paused)"/>
+        <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+        <arg name="gui" value="true"/>
+        <arg name="headless" value="false"/>
+        <arg name="debug" value="false"/>
+        <arg name="verbose" default="false"/>
+        <arg name="gui_required" value="true"/>
+    </include>
+
+    <group ns="$(arg robot_namespace)">
+        <param name="robot_description" textfile="$(find nyu_finger_description)/urdf/nyu_finger.urdf" />
+        <node name="spirit_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" args="  -z 0.0 
+                        -urdf -param robot_description 
+                        -model $(arg robot_namespace)" />
+        <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+        </node>
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+        </node>
+        <node if="$(arg is_start_rviz)" name="rviz" pkg="rviz" type="rviz" output="screen" args="-d $(find nyu_finger_description)/rviz/urdf.rviz"/>
+    </group>
+</launch>

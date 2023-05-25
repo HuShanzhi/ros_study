@@ -1,0 +1,7 @@
+<launch>
+    <arg name="robot_type" default="nyu_finger"/>
+
+    <group if="$(eval arg('robot_type') == 'nyu_finger')">
+        <rosparam command="load" file="$(find nyu_finger_description)/config/nyu_finger.yaml"/>
+    </group>
+</launch>
