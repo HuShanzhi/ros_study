@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<robot>
+  <!-- ros_control plugin -->
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>/hello_leg</robotNamespace>
+      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+    </plugin>
+  </gazebo>
+
+  <!-- Base -->
+  <gazebo reference="base_link">
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Hip -->
+  <gazebo reference="hip_link">
+    <material>Gazebo/Red</material>
+  </gazebo>
+
+  <!-- Upper -->
+  <gazebo reference="upper_link">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+
+  <!-- Lower -->
+  <gazebo reference="lower_link">
+    <material>Gazebo/Green</material>
+  </gazebo>
+  
+  <!-- Transmission -->
+  <transmission name="base_to_hip_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="base_to_hip_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="base_to_hip_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="hip_to_upper_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="hip_to_upper_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="hip_to_upper_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="upper_to_lower_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="upper_to_lower_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="upper_to_lower_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+</robot>
