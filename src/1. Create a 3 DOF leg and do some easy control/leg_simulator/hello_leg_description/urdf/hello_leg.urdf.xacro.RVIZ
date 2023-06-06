@@ -1,0 +1,209 @@
+<?xml version="1.0"?>
+<!-- This file for displaying in rviz, and comparing with the urdf file used in gazebo. -->
+
+<robot name="hello_leg" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!-- Define parameters -->
+    <xacro:property name="PI" value="3.14159265359"/>
+    <xacro:property name="density" value="100"/>
+    <xacro:property name="bodyLength" value="0.07"/>
+    <xacro:property name="bodyWidth" value="0.07"/>
+    <xacro:property name="bodyHeight" value="1.0"/>
+    <xacro:property name="bodyMass" value="${density * (bodyLength*bodyWidth*bodyHeight)}"/>
+    <xacro:property name="hipLength" value="0.199"/>
+    <xacro:property name="hipWidth" value="0.045"/>
+    <xacro:property name="hipHeight" value="0.045"/>
+    <xacro:property name="hipMass" value="${density * (hipLength*hipWidth*hipHeight)}"/>
+    <xacro:property name="upperLength" value="0.044"/>
+    <xacro:property name="upperWidth" value="0.044"/>
+    <xacro:property name="upperHeight" value="0.198"/>
+    <xacro:property name="upperMass" value="${density * (upperLength*upperWidth*upperHeight)}"/>
+    <xacro:property name="lowerLength" value="0.028"/>
+    <xacro:property name="lowerWidth" value="0.028"/>
+    <xacro:property name="lowerHeight" value="0.183"/>
+    <xacro:property name="lowerMass" value="${density * (lowerLength*lowerWidth*lowerHeight)}"/>
+    <xacro:property name="tipRadius" value="0.02"/>
+    <xacro:property name="tipMass" value="${density * 4/3*PI*(tipRadius*tipRadius*tipRadius)}"/>
+    <xacro:property name="jointLowerLimit" value="${-PI/2}"/>
+    <xacro:property name="jointUpperLimit" value="${PI/2}"/>
+    <xacro:property name="jointEffortLimit" value="50"/>
+    <xacro:property name="jointSpeedLimit" value="100"/>
+
+
+    <!-- Define materials -->
+    <material name="darkgray">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+    </material>
+    <material name="silver">
+        <color rgba="0.3 0.3 0.3 1.0"/>
+    </material>
+    <material name="red">
+        <color rgba="1 0 0 1"/>
+    </material>
+    <material name="blue">
+        <color rgba="0 0 1 1"/>
+    </material>
+    <material name="green">
+        <color rgba="0 1 0 1"/>
+    </material>
+
+    <!-- World -->
+    <link name="world"/>
+
+    <joint name="world_to_base_link" type="fixed">
+        <parent link="world"/>
+        <child link="base_link"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Base -->
+    <link name="base_link">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 ${bodyHeight/2}"/>
+            <geometry>
+                <box size="${bodyLength} ${bodyWidth} ${bodyHeight}"/>
+            </geometry>
+            <material name="darkgray"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 ${bodyHeight/2}"/>
+            <geometry>
+                <box size="${bodyLength} ${bodyWidth} ${bodyHeight}"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="${bodyMass}"/>
+            <inertia 
+                ixx="${bodyMass / 12.0 * (bodyWidth*bodyWidth + bodyHeight*bodyHeight)}"  ixy="0.0"  ixz="0.0" 
+                iyy="${bodyMass / 12.0 * (bodyHeight*bodyHeight + bodyLength*bodyLength)}" iyz="0.0" 
+                izz="${bodyMass / 12.0 * (bodyLength*bodyLength + bodyWidth*bodyWidth)}" />
+        </inertial>
+    </link>
+
+    <joint name="base_to_hip_joint" type="revolute">
+        <parent link="base_link"/>
+        <child link="hip_link"/>
+        <origin xyz="${-bodyLength/2} 0 ${bodyHeight/2}"/>
+        <limit effort="${jointEffortLimit}" lower="${jointLowerLimit}" upper="${jointUpperLimit}" velocity="${jointSpeedLimit}"/>
+        <axis xyz="1 0 0"/>
+    </joint>
+    
+    <!-- Hip -->
+    <link name="hip_link">
+        <visual>
+            <origin rpy="0 0 0" xyz="${-hipLength/2} 0 0"/>
+            <geometry>
+                <box size="${hipLength} ${hipWidth} ${hipHeight}"/>
+            </geometry>
+            <material name="red"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="${-hipLength/2} 0 0"/>
+            <geometry>
+                <box size="${hipLength} ${hipWidth} ${hipHeight}"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="${hipMass}"/>
+            <inertia 
+                ixx="${hipMass / 12.0 * (hipWidth*hipWidth + hipHeight*hipHeight)}"  ixy="0.0"  ixz="0.0" 
+                iyy="${hipMass / 12.0 * (hipHeight*hipHeight + hipLength*hipLength)}" iyz="0.0" 
+                izz="${hipMass / 12.0 * (hipLength*hipLength + hipWidth*hipWidth)}" />
+        </inertial>
+    </link>
+
+    <joint name="hip_to_upper_joint" type="revolute">
+        <parent link="hip_link"/>
+        <child link="upper_link"/>
+        <origin xyz="${-hipLength} 0 0"/>
+        <limit effort="${jointEffortLimit}" lower="${jointLowerLimit}" upper="${jointUpperLimit}" velocity="${jointSpeedLimit}"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+
+    <!-- Upper -->
+    <link name="upper_link">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 ${-upperHeight/2}"/>
+            <geometry>
+                <box size="${upperLength} ${upperWidth} ${upperHeight}"/>
+            </geometry>
+            <material name="blue"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 ${-upperHeight/2}"/>
+            <geometry>
+                <box size="${upperLength} ${upperWidth} ${upperHeight}"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="${upperMass}"/>
+            <inertia 
+                ixx="${upperMass / 12.0 * (upperWidth*upperWidth + upperHeight*upperHeight)}"  ixy="0.0"  ixz="0.0" 
+                iyy="${upperMass / 12.0 * (upperHeight*upperHeight + upperLength*upperLength)}" iyz="0.0" 
+                izz="${upperMass / 12.0 * (upperLength*upperLength + upperWidth*upperWidth)}" />
+        </inertial>
+    </link>
+
+    <joint name="upper_to_lower_joint" type="revolute">
+        <parent link="upper_link"/>
+        <child link="lower_link"/>
+        <origin xyz="0 0 ${-upperHeight}"/>
+        <limit effort="${jointEffortLimit}" lower="${jointLowerLimit}" upper="${jointUpperLimit}" velocity="${jointSpeedLimit}"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+
+    <!-- Lower -->
+    <link name="lower_link">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 ${-lowerHeight/2}"/>
+            <geometry>
+                <box size="${lowerLength} ${lowerWidth} ${lowerHeight}"/>
+            </geometry>
+            <material name="green"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 ${-lowerHeight/2}"/>
+            <geometry>
+                <box size="${lowerLength} ${lowerWidth} ${lowerHeight}"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="${lowerMass}"/>
+            <inertia 
+                ixx="${lowerMass / 12.0 * (lowerWidth*lowerWidth + lowerHeight*lowerHeight)}"  ixy="0.0"  ixz="0.0" 
+                iyy="${lowerMass / 12.0 * (lowerHeight*lowerHeight + lowerLength*lowerLength)}" iyz="0.0" 
+                izz="${lowerMass / 12.0 * (lowerLength*lowerLength + lowerWidth*lowerWidth)}" />
+        </inertial>
+    </link>
+
+    <joint name="lower_to_tip_link" type="fixed">
+        <parent link="lower_link"/>
+        <child link="tip_link"/>
+        <origin xyz="0 0 ${-lowerHeight}" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Tip -->
+    <link name="tip_link">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <sphere radius="${tipRadius}"/>
+            </geometry>
+            <material name="red"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <sphere radius="${tipRadius}"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="${tipMass}"/>
+            <inertia 
+                ixx="${2/5 * tipMass * (tipRadius*tipRadius)}"  ixy="0.0"  ixz="0.0" 
+                iyy="${2/5 * tipMass * (tipRadius*tipRadius)}" iyz="0.0" 
+                izz="${2/5 * tipMass * (tipRadius*tipRadius)}" />
+        </inertial>
+    </link>
+
+</robot>
